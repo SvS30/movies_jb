@@ -19,6 +19,11 @@ Luego de clonar el proyecto, necesitara:
     - Establecer variables en `.env`.
       - Puedes generar una nueva key, [aquí](https://djecrety.ir/).
 
+3. Crear migraciones de modelos
+    ```bash
+    python manage.py makemigrations Genre Movie UserActions
+    ```
+
 3. Migrar modelos
     ```bash
     python manage.py migrate
