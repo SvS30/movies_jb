@@ -1,6 +1,9 @@
 # Movies JB
 Web de peliculas con **Django** y **Django Rest Framework**.
 
+Docs:
+- [Rest API](https://github.com/SvS30/movies_jb/wiki/Home-REST-API-Docs)
+
 ### ✔ Checklist of features
 - [X] Listado de peliculas por genero.
 - [X] Los usuarios pueden asignar un rating personal a las peliculas.
