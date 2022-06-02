@@ -35,7 +35,7 @@ class ReviewAPIView(APIView):
             avg_rating = Review.objects.filter(movie=movie_update_rating.id).aggregate(Avg('rating'))
             count_reviews = Review.objects.filter(movie=movie_update_rating.id).aggregate(Count('text'))
             movie_data = {
-                'rating': avg_rating['rating__avg'],
+                'rating': round(avg_rating['rating__avg'], 2),
                 'count_reviews': count_reviews['text__count']
             }
             movie_to_update_serialized = MovieSerializer(movie_update_rating, data=movie_data, partial=True)
