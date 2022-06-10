@@ -38,17 +38,24 @@ class GenreAPIView(APIView):
             rest_framework.Response
         """
         genre_data = JSONParser().parse(request)
-        genre_serialized = GenreSerializer(data=genre_data)
-        if genre_serialized.is_valid():
-            genre_serialized.save()
+        is_duplicated = Genre.objects.filter(name=genre_data['name']).exists()
+        if not is_duplicated:
+            genre_serialized = GenreSerializer(data=genre_data)
+            if genre_serialized.is_valid():
+                genre_serialized.save()
+                return Response({
+                    'message': 'Genre created successfully',
+                    'data': genre_serialized.data
+                }, status=status.HTTP_201_CREATED)
             return Response({
-                'message': 'Genre created successfully',
-                'data': genre_serialized.data
-            }, status=status.HTTP_201_CREATED)
-        return Response({
-            'message': 'Error in saved to new Genre',
-            'errors': genre_serialized.errors
-        }, status=status.HTTP_400_BAD_REQUEST)
+                'message': 'Error in saved to new Genre',
+                'errors': genre_serialized.errors
+            }, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response({
+                'message': 'Error in saved to new Genre',
+                'errors': { 'name': 'This genre has already been registered' }
+            }, status=status.HTTP_400_BAD_REQUEST)
 
 class GenreDetailAPIView(APIView):
     """Class used to represents some Genre endpoints

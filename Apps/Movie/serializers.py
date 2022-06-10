@@ -4,6 +4,7 @@ from Apps.Movie.models import Movie, MovieImage
 
 class MovieSerializer(serializers.Serializer):
     # Fields
+    id = serializers.IntegerField()
     title = serializers.CharField(max_length=50)
     year = serializers.IntegerField()
     resume = serializers.CharField()
@@ -30,7 +31,7 @@ class MovieSerializer(serializers.Serializer):
 
     class Meta:
         model = Movie
-        fields = ['title', 'year', 'resume', 'rating', 'count_reviews', 'images', 'genres']
+        fields = ['id', 'title', 'year', 'resume', 'rating', 'count_reviews', 'images', 'genres']
 
 class MovieImageSerializer(serializers.Serializer):
     # Fields
