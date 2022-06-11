@@ -12,32 +12,35 @@ Docs:
 
 ### 🚧 Configuración
 Luego de clonar el proyecto, necesitara:
-1. Instalar las dependencias del proyecto
-    ```bash
-    pip install -r requirements.txt
-    ```
-
-2. Modificar variables de entorno
+- Modificar variables de entorno
     - Duplicar `.env.example` y renombrar copia a `.env`.
     - Establecer variables en `.env`.
       - Puedes generar una nueva key, [aquí](https://djecrety.ir/).
 
-3. Crear migraciones de modelos
+<details>
+<summary>Sin Docker</summary>
+
+- Instalar las dependencias del proyecto
     ```bash
-    python manage.py makemigrations Genre Movie UserActions
+    pip install -r requirements.txt
     ```
 
-3. Migrar modelos
+- Crear migraciones de modelos
+
+    ```bash
+    python manage.py makemigrations
+    ```
+
+- Migrar modelos
     ```bash
     python manage.py migrate
     ```
 
-4. Crear `superuser`
+- Crear `superuser`
     ```bash
     python manage.py createsuperuser
     ```
 
-### Comandos disponibles
 - Levantar el servidor
     ```bash
     python manage.py runserver
@@ -50,6 +53,21 @@ Luego de clonar el proyecto, necesitara:
     ```bash
     python manage.py test --debug-mode --timing --traceback
     ```
+</details>
+
+<details>
+<summary>Con Docker</summary>
+
+- Crear imagen
+    ```bash
+    docker build . -t $image_name:$image_port
+    ```
+
+- Crear contenedor y opciones de desarrollo
+    ```bash
+    docker run --name movies_container -d -p $desktop_port:80 $image_name:$image_port
+    ```
+</details>
 
 ### 🧰 Dependencias || plugins
 | Name | Version |

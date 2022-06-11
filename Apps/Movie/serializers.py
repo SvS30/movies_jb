@@ -4,7 +4,7 @@ from Apps.Movie.models import Movie, MovieImage
 
 class MovieSerializer(serializers.Serializer):
     # Fields
-    id = serializers.IntegerField()
+    id = serializers.IntegerField(required=False)
     title = serializers.CharField(max_length=50)
     year = serializers.IntegerField()
     resume = serializers.CharField()
