@@ -14,7 +14,7 @@ class Review(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return "{0} - {1}".format(self.user, self.movie)
+        return "{0} - {1}".format(self.user, self.rating)
 
     class Meta:
         db_table = 'reviews'

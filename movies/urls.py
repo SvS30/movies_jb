@@ -23,7 +23,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     re_path(r'^api/v1/movies/', include('Apps.Movie.urls')),
     re_path(r'^api/v1/genres/', include('Apps.Genre.urls')),
-    re_path(r'^api/v1/user-actions/', include('Apps.UserActions.urls'))
+    re_path(r'^api/v1/user-actions/', include('Apps.UserActions.urls')),
+    re_path(r'^api/v1/authentication/', include('Apps.Auth.urls'))
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

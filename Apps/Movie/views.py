@@ -2,6 +2,8 @@ from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.authentication import TokenAuthentication
 
 from Apps.Movie.models import Movie, MovieImage
 from Apps.Movie.serializers import MovieImageSerializer, MovieSerializer
@@ -9,9 +11,14 @@ from Apps.Movie.serializers import MovieImageSerializer, MovieSerializer
 # Create your views here.
 
 class MoviesAPIView(APIView):
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = (TokenAuthentication,)
     """Class used to represents some Movies endpoints
     
     Methods availables : GET, POST
+    Authentication:
+        Token required in Header:
+            Authorization: Token {token}
     """
     def get(self, request, format=None):
         """Return a list of all movies
@@ -51,9 +58,14 @@ class MoviesAPIView(APIView):
         }, status=status.HTTP_400_BAD_REQUEST)
 
 class MovieDetailAPIView(APIView):
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = (TokenAuthentication,)
     """Class used to represents some Movies endpoints
     
     Methods availables : GET, PUT, DELETE
+    Authentication:
+        Token required in Header:
+            Authorization: Token {token}
     """
     def get_object(self, id):
         """Search if exists the movie with that id
@@ -136,9 +148,14 @@ class MovieDetailAPIView(APIView):
         }, status=status.HTTP_404_NOT_FOUND)
 
 class MovieImageAPIView(APIView):
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = (TokenAuthentication,)
     """Class used to represents some MovieImage endpoints
     
     Methods availables : POST
+    Authentication:
+        Token required in Header:
+            Authorization: Token {token}
     """
     def post(self, request, format=None):
         """Save a new Movie's image
@@ -163,9 +180,14 @@ class MovieImageAPIView(APIView):
         }, status=status.HTTP_400_BAD_REQUEST)
 
 class MovieImageDetailAPIView(APIView):
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = (TokenAuthentication,)
     """Class used to represents some MovieImage endpoints
     
     Methods availables : DELETE
+    Authentication:
+        Token required in Header:
+            Authorization: Token {token}
     """
     def get_object(self, id):
         """Search if exists the Movie's image with that id
