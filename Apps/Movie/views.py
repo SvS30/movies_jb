@@ -66,18 +66,18 @@ class MovieDetailAPIView(APIView):
         except Movie.DoesNotExist:
             return 404
 
-    def get(self, request, id, format=None):
+    def get(self, request, movie_id, format=None):
         """Return a movie
 
         Args:
             request (rest_framework.request): Request received
-            id (int): Movie'id
+            movie_id (int): Movie'id
             format: Defaults to None.
 
         Returns:
             rest_framework.Response
         """
-        movie = self.get_object(id)
+        movie = self.get_object(movie_id)
         if movie != 404:
             queryset = MovieSerializer(movie, many=False)
             return Response(queryset.data, status=status.HTTP_200_OK)
@@ -85,51 +85,51 @@ class MovieDetailAPIView(APIView):
             'message': 'Movie not found',
         }, status=status.HTTP_404_NOT_FOUND)
 
-    def put(self, request, id, format=None):
+    def put(self, request, movie_id, format=None):
         """Update a movie
 
         Args:
             request (rest_framework.request): Request received
-            id (int): Movie'id
+            movie_id (int): Movie'id
             format: Defaults to None.
 
         Returns:
             rest_framework.Response
         """
-        movie = self.get_object(id)
+        movie = self.get_object(movie_id)
         if movie != 404:
             movie_data = JSONParser().parse(request)
             movie_serialized = MovieSerializer(movie, data=movie_data, partial=True)
             if movie_serialized.is_valid():
                 movie_serialized.save()
                 return Response({
-                    'message': f'Movie with ID:{id} was updated successfully',
+                    'message': f'Movie with ID:{movie_id} was updated successfully',
                     'data': movie_serialized.data
                 }, status=status.HTTP_200_OK)
             return Response({
-                'message': f'Error in update the movie with ID: {id}',
+                'message': f'Error in update the movie with ID: {movie_id}',
                 'errors': movie_serialized.errors
             }, status=status.HTTP_400_BAD_REQUEST)
         return Response({
             'message': 'Movie not found',
         }, status=status.HTTP_404_NOT_FOUND)
 
-    def delete(self, request, id, format=None):
+    def delete(self, request, movie_id, format=None):
         """Delete a movie
 
         Args:
             request (rest_framework.request): Request received
-            id (int): Movie'id
+            movie_id (int): Movie'id
             format: Defaults to None.
 
         Returns:
             rest_framework.Response
         """
-        movie = self.get_object(id)
+        movie = self.get_object(movie_id)
         if movie != 404:
             movie.delete()
             return Response({
-                'message': f'Movie with ID:{id} was deleted successfully'
+                'message': f'Movie with ID:{movie_id} was deleted successfully'
             }, status=status.HTTP_200_OK)
         return Response({
             'message': 'Movie not found',
@@ -178,22 +178,22 @@ class MovieImageDetailAPIView(APIView):
         except MovieImage.DoesNotExist:
             return 404
 
-    def delete(self, request, id, format=None):
+    def delete(self, request, movie_image_id, format=None):
         """Delete a Movie's image
 
         Args:
             request (rest_framework.request): Request received
-            id (int): MovieImage'id
+            movie_image_id (int): MovieImage'id
             format: Defaults to None.
 
         Returns:
             rest_framework.Response
         """
-        image = self.get_object(id)
+        image = self.get_object(movie_image_id)
         if image != 404:
             image.delete()
             return Response({
-                'message': f"Movie's image with ID:{id} was deleted successfully"
+                'message': f"Movie's image with ID:{movie_image_id} was deleted successfully"
             }, status=status.HTTP_200_OK)
         return Response({
             'message': "Movie's image not found",
