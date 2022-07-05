@@ -12,6 +12,8 @@ from Apps.Movie.models import Movie
 class GenreTests(APITestCase):
     """ Test module for Genre model """
 
+    # FIXME: Add authentication in the tests
+
     # Test preparation
     def setUp(self):
         """Generate data for tests

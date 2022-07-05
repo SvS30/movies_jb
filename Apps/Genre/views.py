@@ -2,6 +2,8 @@ from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.authentication import TokenAuthentication
 
 from Apps.Genre.models import Genre, GenreMovie
 from Apps.Genre.serializers import GenreMovieSerializer, GenreSerializer
@@ -9,9 +11,14 @@ from Apps.Genre.serializers import GenreMovieSerializer, GenreSerializer
 # Create your views here.
 
 class GenreAPIView(APIView):
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = (TokenAuthentication,)
     """Class used to represents some Genre endpoints
     
     Methods availables : GET, POST
+    Authentication:
+        Token required in Header:
+            Authorization: Token {token}
     """
     def get(self, request, format=None):
         """Return a list of all genres
@@ -58,9 +65,14 @@ class GenreAPIView(APIView):
             }, status=status.HTTP_400_BAD_REQUEST)
 
 class GenreDetailAPIView(APIView):
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = (TokenAuthentication,)
     """Class used to represents some Genre endpoints
     
     Methods availables : GET, PUT, DELETE
+    Authentication:
+        Token required in Header:
+            Authorization: Token {token}
     """
     def get_object(self, id):
         """Search if exists the genre with that id
@@ -143,9 +155,14 @@ class GenreDetailAPIView(APIView):
         }, status=status.HTTP_404_NOT_FOUND)
 
 class GenreMovieAPIView(APIView):
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = (TokenAuthentication,)
     """Class used to assign movies to genres
     
     Methods availables : POST
+    Authentication:
+        Token required in Header:
+            Authorization: Token {token}
     """
     def post(self, request, format=None):
         """Save a new assign movie to genre
@@ -171,6 +188,15 @@ class GenreMovieAPIView(APIView):
         }, status=status.HTTP_400_BAD_REQUEST)
 
 class GenreMovieDetailAPIView(APIView):
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = (TokenAuthentication,)
+    """Class used to represents some GenreMovie endpoints
+    
+    Methods availables : PUT, DELETE
+    Authentication:
+        Token required in Header:
+            Authorization: Token {token}
+    """
     def get_object(self, id):
         """Search if exists the record with that id
 

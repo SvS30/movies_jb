@@ -11,6 +11,8 @@ from Apps.Movie.models import Movie
 class ReviewTests(APITestCase):
     """ Test module for Review model """
 
+    # FIXME: Add authenticacion in the tests
+
     # Test preparation
     def setUp(self):
         """Generate data for tests

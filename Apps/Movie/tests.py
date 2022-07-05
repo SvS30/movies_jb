@@ -11,6 +11,8 @@ from Apps.Movie.serializers import MovieSerializer
 class MovieTests(APITestCase):
     """ Test module for Movie model """
 
+    # FIXME: Add authentication in the tests
+
     # Test preparation
     def setUp(self):
         """Generate data for tests
