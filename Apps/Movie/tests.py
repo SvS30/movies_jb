@@ -1,25 +1,33 @@
-import json
-from django.urls import reverse
-from rest_framework import status
+from rest_framework.authtoken.models import Token
 from rest_framework.test import APITestCase
+from rest_framework import status
+from django.contrib.auth.models import User
+from django.urls import reverse
+import json
 
 from Apps.Movie.models import Movie
 from Apps.Movie.serializers import MovieSerializer
 
 # Create your tests here.
 
-class MovieTests(APITestCase):
+class MovieTestCase(APITestCase):
     """ Test module for Movie model """
-
-    # FIXME: Add authentication in the tests
 
     # Test preparation
     def setUp(self):
         """Generate data for tests
         """
+        self.user = User.objects.create_user(username='root', password='123456')
+        self.token = Token.objects.get_or_create(user=self.user)
+        self.api_authentication()
         Movie.objects.create(title='John Wick', year=2014, resume='John Wick')
         Movie.objects.create(title='Nadie (Nobody)', year=2022, resume='Nadie (Nobody)')
         Movie.objects.create(title='PIRATAS DEL CARIBE: LA MALDICIÓN DE LA PERLA NEGRA', year=2014, resume='PIRATAS DEL CARIBE: LA MALDICIÓN DE LA PERLA NEGRA')
+
+    def api_authentication(self):
+        """Function to add the Authorization Header
+        """
+        self.client.credentials(HTTP_AUTHORIZATION=f"Token {self.token[0]}")
 
     # GET all Movies
     def test_get_movies(self):
@@ -63,7 +71,7 @@ class MovieTests(APITestCase):
         - Compare the title in the response with the query
         """
         response = self.client.put(
-            reverse('movies_details', kwargs={'id': 3}),
+            reverse('movies_details', kwargs={'movie_id': 3}),
             data=json.dumps({
                 'title': 'Piratas Del Caribe: La Maldición Del Perla Negra'
             }),
@@ -80,7 +88,7 @@ class MovieTests(APITestCase):
         - message in response == 'Movie with ID:3 was deleted successfully'
         - records == 2
         """
-        response = self.client.delete(reverse('movies_details', kwargs={'id': 3}))
+        response = self.client.delete(reverse('movies_details', kwargs={'movie_id': 3}))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['message'], "Movie with ID:3 was deleted successfully")
         self.assertEqual(len(Movie.objects.all()), 2)
