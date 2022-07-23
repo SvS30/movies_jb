@@ -1,5 +1,5 @@
 # Movies JB
-Web de peliculas con **Django** y **Django Rest Framework**.
+API-Rest de peliculas con **Django** y **Django Rest Framework**.
 
 Docs:
 - [Rest API](https://github.com/SvS30/movies_jb/wiki/Home-REST-API-Docs)
