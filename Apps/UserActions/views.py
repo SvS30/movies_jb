@@ -2,6 +2,8 @@ from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.authentication import TokenAuthentication
 from django.db.models import Avg, Count
 
 from Apps.Movie.models import Movie
@@ -13,9 +15,14 @@ from Apps.UserActions.serializer import FavoriteSerializer, ReviewSerializer
 # Create your views here.
 
 class ReviewAPIView(APIView):
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = (TokenAuthentication,)
     """Class used to represents some UserAction's endpoints
     
     Methods availables : POST
+    Authentication:
+        Token required in Header:
+            Authorization: Token {token}
     """
     def post(self, request, format=None):
         """Save a new Review's instance
@@ -27,7 +34,12 @@ class ReviewAPIView(APIView):
         Returns:
             rest_framework.Response
         """
-        review_data = JSONParser().parse(request)
+        review_data = {
+            'user': request.user.id,
+            'movie': request.data['movie'],
+            'rating': request.data['rating'],
+            'text': request.data['text']
+        }
         review_serialized = ReviewSerializer(data=review_data)
         if review_serialized.is_valid():
             review_serialized.save()
@@ -56,9 +68,14 @@ class ReviewAPIView(APIView):
         }, status=status.HTTP_400_BAD_REQUEST)
 
 class FavoriteAPIView(APIView):
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = (TokenAuthentication,)
     """Class used to represents some MovieImage endpoints
     
     Methods availables : GET, POST
+    Authentication:
+        Token required in Header:
+            Authorization: Token {token}
     """
     def get(self, request, format=None):
         """Return a list of User Favorites Movie
@@ -70,7 +87,7 @@ class FavoriteAPIView(APIView):
         Returns:
             rest_framework.Response
         """
-        movies_favorites = Favorite.objects.filter(user=2)
+        movies_favorites = Favorite.objects.filter(user=request.user.id)
         favorites_serialized = FavoriteSerializer(movies_favorites, many=True)
         return Response(favorites_serialized.data, status=status.HTTP_200_OK)
 
@@ -84,7 +101,10 @@ class FavoriteAPIView(APIView):
         Returns:
             rest_framework.Response
         """
-        favorite_data = JSONParser().parse(request)
+        favorite_data = {
+            'user': request.user.id,
+            'movie': request.data['movie']
+        }
         favorite_serialized = FavoriteSerializer(data=favorite_data)
         if favorite_serialized.is_valid():
             favorite_serialized.save()

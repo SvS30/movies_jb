@@ -1,7 +1,9 @@
-import json
-from django.urls import reverse
-from rest_framework import status
+from rest_framework.authtoken.models import Token
 from rest_framework.test import APITestCase
+from rest_framework import status
+from django.contrib.auth.models import User
+from django.urls import reverse
+from json import dumps
 
 from Apps.Genre.models import Genre, GenreMovie
 from Apps.Genre.serializers import GenreSerializer
@@ -9,16 +11,24 @@ from Apps.Movie.models import Movie
 
 # Create your tests here.
 
-class GenreTests(APITestCase):
+class GenreTestCase(APITestCase):
     """ Test module for Genre model """
 
     # Test preparation
     def setUp(self):
         """Generate data for tests
         """
+        self.user = User.objects.create_user(username='root', password='123456')
+        self.token = Token.objects.get_or_create(user=self.user)
+        self.api_authentication()
         Genre.objects.create(name='Acción')
         Genre.objects.create(name='Aventura')
         Genre.objects.create(name='Crimen')
+
+    def api_authentication(self):
+        """Function to add the Authorization Header
+        """
+        self.client.credentials(HTTP_AUTHORIZATION=f"Token {self.token[0]}")
 
     # GET all Genres
     def test_get_genres(self):
@@ -43,7 +53,7 @@ class GenreTests(APITestCase):
         """
         response = self.client.post(
             reverse('get_post_genres'),
-            data=json.dumps({ 'name': 'Fantasia' }),
+            data=dumps({ 'name': 'Fantasia' }),
             content_type='application/json'
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -58,8 +68,8 @@ class GenreTests(APITestCase):
         - Compare the name in the response with the query
         """
         response = self.client.put(
-            reverse('genres_details', kwargs={'id': 3}),
-            data=json.dumps({ 'name': 'Comedia' }),
+            reverse('genres_details', kwargs={'genre_id': 3}),
+            data=dumps({ 'name': 'Comedia' }),
             content_type='application/json'
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -73,22 +83,30 @@ class GenreTests(APITestCase):
         - message in response == 'Genre with ID:3 was deleted successfully'
         - records == 2
         """
-        response = self.client.delete(reverse('genres_details', kwargs={'id': 3}))
+        response = self.client.delete(reverse('genres_details', kwargs={'genre_id': 3}))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['message'], "Genre with ID:3 was deleted successfully")
         self.assertEqual(len(Genre.objects.all()), 2)
 
-class GenreMovieTests(APITestCase):
+class GenreMovieTestCase(APITestCase):
     """ Test module for GenreMovie model """
 
     # Test preparation
     def setUp(self):
         """Generate data for tests
         """
+        self.user = User.objects.create_user(username='root', password='123456')
+        self.token = Token.objects.get_or_create(user=self.user)
+        self.api_authentication()
         Genre.objects.create(name='Aventura')
         self.genre = Genre.objects.create(name='Acción')
         self.movie = Movie.objects.create(title='John Wick', year=2014, resume='John Wick')
         GenreMovie.objects.create(movie=self.movie, genre=self.genre)
+
+    def api_authentication(self):
+        """Function to add the Authorization Header
+        """
+        self.client.credentials(HTTP_AUTHORIZATION=f"Token {self.token[0]}")
 
     # POST a new GenreMovie record
     def test_post_genre_movie(self):
@@ -98,7 +116,7 @@ class GenreMovieTests(APITestCase):
         """
         response = self.client.post(
             reverse('post_genremovie'),
-            data=json.dumps({ 'movie': 1, 'genre': 2 }),
+            data=dumps({ 'movie': 1, 'genre': 2 }),
             content_type='application/json'
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -111,8 +129,8 @@ class GenreMovieTests(APITestCase):
         - message in response == 'The record with ID:1 was updated successfully'
         """
         response = self.client.put(
-            reverse('genremovie_details', kwargs={'id': 1}),
-            data=json.dumps({ 'genre': 2 }),
+            reverse('genremovie_details', kwargs={'genre_movie_id': 1}),
+            data=dumps({ 'genre': 2 }),
             content_type='application/json'
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -125,7 +143,9 @@ class GenreMovieTests(APITestCase):
         - message in response == 'The record with ID:1 was deleted successfully'
         - records == 2
         """
-        response = self.client.delete(reverse('genremovie_details', kwargs={'id': 1}))
+        token = Token.objects.get(user__username='root')
+        self.client.credentials(HTTP_AUTHORIZATION=f"Token {token.key}")
+        response = self.client.delete(reverse('genremovie_details', kwargs={'genre_movie_id': 1}))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['message'], "The record with ID:1 was deleted successfully")
         self.assertEqual(len(Genre.objects.all()), 2)
