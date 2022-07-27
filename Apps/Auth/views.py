@@ -1,12 +1,15 @@
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.authtoken.models import Token
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 from django.contrib.auth.hashers import check_password
+from django.shortcuts import redirect
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
+import requests
 
 # Create your views here.
 
@@ -78,3 +81,43 @@ def logout(request, format=None):
     return Response({
         'message': 'Logout successfully',
     }, status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+def oauth_login(request, format=None):
+    """Request auth with Discord
+
+    Args:
+        request: (rest_framework.HttpRequest): Request received
+        format: Defaults to None.
+
+    Returns:
+        django.shortcuts.redirect: Redirect to Discord
+    """
+    return redirect(settings.OAUTH_URL)
+
+@api_view(['GET'])
+def oauth_redirect(request, format=None):
+    user, token = exchange_code(request.GET['code'])
+    return Response({
+        'message': 'Authentication complete',
+        'user': { 'username': user['username'], 'avatar': user['avatar'] },
+        'access_token': token
+    }, status=status.HTTP_200_OK)
+
+def exchange_code(code):
+    data = {
+        'client_id': settings.OAUTH_CLIENT_ID,
+        'client_secret': settings.OAUTH_CLIENT_SECRET,
+        'grant_type': 'authorization_code',
+        'code': code,
+        'redirect_uri': settings.OAUTH_CALLBACK,
+        'scope': 'identify'
+    }
+    response = requests.post('https://discord.com/api/oauth2/token', data, headers={
+        'Content-Type': 'application/x-www-form-urlencoded'
+    })
+    credentials = response.json()
+    user_info = requests.get('https://discord.com/api/v6/users/@me', headers={
+        'Authorization': f"Bearer {credentials['access_token']}"
+    })
+    return user_info.json(), credentials['access_token']
