@@ -17,12 +17,6 @@ from os import path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Base url to serve media files
-MEDIA_URL = '/media/'
-
-# Path where media is stored
-MEDIA_ROOT = path.join(BASE_DIR, 'media/')
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
@@ -143,7 +137,19 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
+# Base url to serve media files
+MEDIA_URL = '/media/'
+
+# Path where media is stored
+MEDIA_ROOT = path.join(BASE_DIR, 'media/')
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Environment variables for OAuth2 authentication
+OAUTH_URL = get_env('OAUTH_URL')
+OAUTH_CLIENT_ID = get_env('OAUTH_CLIENT_ID')
+OAUTH_CLIENT_SECRET = get_env('OAUTH_CLIENT_SECRET')
+OAUTH_CALLBACK = get_env('OAUTH_CALLBACK')
