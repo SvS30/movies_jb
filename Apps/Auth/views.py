@@ -97,14 +97,42 @@ def oauth_login(request, format=None):
 
 @api_view(['GET'])
 def oauth_redirect(request, format=None):
+    """Request access_token to Discord
+
+    Args:
+        request (rest_framework.HttpRequest): Request received
+        format: Defaults to None.
+
+    Returns:
+        rest_framework.Response
+    """
     user, token = exchange_code(request.GET['code'])
-    return Response({
-        'message': 'Authentication complete',
-        'user': { 'username': user['username'], 'avatar': user['avatar'] },
-        'access_token': token
-    }, status=status.HTTP_200_OK)
+    if user['verified'] == True:
+        return Response({
+            'message': 'Authentication complete',
+            'user': {
+                'username': user['username'],
+                'email': user['email'],
+                'avatar': user['avatar']
+            },
+            'access_token': token
+        }, status=status.HTTP_200_OK)
+    else:
+        return Response({
+            'message': 'Authentication incomplete',
+            'error': 'Email not verified'
+        }, status=status.HTTP_403_FORBIDDEN)
 
 def exchange_code(code):
+    """Config Discord Request
+
+    Args:
+        code (str): Discord Authorization Code
+
+    Returns:
+        user_info (json): User info from Discord
+        credentials (str): Access Token from Discord
+    """
     data = {
         'client_id': settings.OAUTH_CLIENT_ID,
         'client_secret': settings.OAUTH_CLIENT_SECRET,
