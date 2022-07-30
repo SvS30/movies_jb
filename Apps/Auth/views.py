@@ -11,6 +11,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
 import requests
 
+from Apps.Auth.models import DiscordUser
+
 # Create your views here.
 
 def valid_credentials(username, password):
@@ -97,7 +99,7 @@ def oauth_login(request, format=None):
 
 @api_view(['GET'])
 def oauth_redirect(request, format=None):
-    """Request access_token to Discord
+    """Request access_token to Discord and return User Data with AuthToken
 
     Args:
         request (rest_framework.HttpRequest): Request received
@@ -106,21 +108,35 @@ def oauth_redirect(request, format=None):
     Returns:
         rest_framework.Response
     """
-    user, token = exchange_code(request.GET['code'])
-    if user['verified'] == True:
-        return Response({
-            'message': 'Authentication complete',
-            'user': {
-                'username': user['username'],
-                'email': user['email'],
-                'avatar': user['avatar']
-            },
-            'access_token': token
-        }, status=status.HTTP_200_OK)
+    if not 'error' in request.query_params:
+        oauth_user, token = exchange_code(request.GET['code'])
+        if oauth_user['verified']:
+            find_user = DiscordUser.objects.filter(id=oauth_user['id']).exists()
+            if find_user:
+                discord_user = DiscordUser.objects.get(id=oauth_user['id'])
+                user = User.objects.get(id=discord_user.user_id)
+            else:
+                user = User.objects.create(username=oauth_user['username'], email=oauth_user['email'])
+                DiscordUser.objects.create_discord_user(user=oauth_user, user_id=user)
+            token,_ = Token.objects.get_or_create(user=user)
+            return Response({
+                'message': 'Authentication complete',
+                'user': {
+                    'username': oauth_user['username'],
+                    'email': oauth_user['email'],
+                    'avatar': oauth_user['avatar']
+                },
+                'Token': f"{token}"
+            }, status=status.HTTP_200_OK)
+        else:
+            return Response({
+                'message': 'Authentication incomplete',
+                'error': 'Email not verified'
+            }, status=status.HTTP_403_FORBIDDEN)
     else:
         return Response({
-            'message': 'Authentication incomplete',
-            'error': 'Email not verified'
+            'message': 'Authentication Failed',
+            'error': 'Authorization denied'
         }, status=status.HTTP_403_FORBIDDEN)
 
 def exchange_code(code):

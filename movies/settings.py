@@ -42,7 +42,8 @@ INSTALLED_APPS = [
     'Apps.UserActions',
     'rest_framework',
     'rest_framework.authtoken',
-    'corsheaders'
+    'corsheaders',
+    'Apps.Auth'
 ]
 
 REST_FRAMEWORK = {
