@@ -2,11 +2,13 @@
 API-Rest de peliculas con **Django**, **Django Rest Framework**, **OAuth2**.
 
 ### ✔ Checklist of features
+- [X] Admin dashboard.
 - [X] Listado de peliculas por genero.
 - [X] Los usuarios pueden asignar un rating personal a las peliculas.
 - [X] Los usuarios pueden marcar películas como favoritas.
 - [X] Los usuarios pueden agregar reviews.
 - [X] Inicio de sesión con Discord.
+- [X] Inicio de sesión tradicional (correo y contraseña).
 
 ### 🚧 Configuración
 Luego de clonar el proyecto, necesitara:
@@ -28,7 +30,7 @@ Luego de clonar el proyecto, necesitara:
     - Crear migraciones de modelos
 
         ```bash
-        python manage.py makemigrations
+        python manage.py makemigrations Movie Genre Auth UserActions
         ```
 
     - Migrar modelos
