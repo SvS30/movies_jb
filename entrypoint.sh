@@ -1,6 +1,8 @@
 #!/bin/bash
 
-python manage.py makemigrations
+set -xe
+
+python manage.py makemigrations Movie Genre Auth UserActions
 
 python manage.py migrate
 
