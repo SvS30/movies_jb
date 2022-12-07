@@ -16,8 +16,10 @@ Luego de clonar el proyecto, necesitara:
     - Duplicar `.env.example` y renombrar copia a `.env`.
     - Establecer variables en `.env`.
       - Puedes generar una nueva **SECRET_KEY**, [aquí](https://djecrety.ir/).
-      - Asigna **True** or **False** dependiendo del **stage** en el que te encuentres.
-      - Puedes generar tus datos de **Discord** para **OAuth2**, [aquí](https://discord.com/developers/applications/)
+      - Asigna `DEBUG` a **True** or **False** dependiendo del **stage** en el que te encuentres.
+      - Asigna tus credenciales de **OAuth2** en las variables `OAUTH_*`.
+        - Puedes generar tus datos de **Discord** para **OAuth2**, [aquí](https://discord.com/developers/applications/).
+      - Asigna tus credenciales de **Postgres** en las variables `DB_*`.
 
     <details>
     <summary>Sin Docker</summary>
@@ -60,14 +62,16 @@ Luego de clonar el proyecto, necesitara:
     <details>
     <summary>Con Docker</summary>
 
-    - Crear imagen
-        ```bash
-        docker build . -t $image_name:$image_port
-        ```
+    - Configurar credenciales en `.env` con las especificadas en `docker-compose.yml` o viceversa.
 
-    - Crear contenedor y opciones de desarrollo
+    - Cambiar el host de postgres a **db**, en `.env`.
+      - `DB_HOST=db`
+
+    - Configurar credenciales de superuser en `entrypoint.sh`
+
+    - Crear imagen y contenedor
         ```bash
-        docker run --name movies_container -d -p $desktop_port:80 $image_name:$image_port
+        docker-compose up -d --build
         ```
     </details>
 
